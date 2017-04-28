@@ -44,7 +44,12 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 all : libresistance.so $(TESTS)
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -f $(TESTS) gtest.a gtest_main.a *.o *.so
+
+test : all
+	@echo "Running tests!"
+	@$(ROOT_DIR)/libresistance_tests
+	@echo "Tests done"
 
 # Builds gtest.a and gtest_main.a.
 

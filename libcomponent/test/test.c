@@ -1,7 +1,7 @@
-// gcc test.c unity/unity.c ../libcomponent/libcomponent.c -o test
+// gcc test.c unity/unity.c ../main/libcomponent.c -o test
 
 #include "unity/unity.h"
-#include "../libcomponent/libcomponent.h"
+#include "../main/libcomponent.h"
 
 void test_e_resistance(void)
 {

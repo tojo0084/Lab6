@@ -1,87 +1,98 @@
+// Tomas Johansson, Bibliotek 3, libcomponent.so
 #include <stdio.h>
 #include <stdlib.h> // qsort
-#include <math.h> // innehåller funktionen fabs (absolutvärdet för float/double) och även pow (uppöjt till)
-//vid kompilering av math.h: använd -lm (math library is named libm.so)
-
-
-//#include <limits.h> // innehåller ULLONG_MAX
-//#include <float.h> // FLT_MIN
-//#include <tgmath.h>
-//#include <errno.h>
-//#include <fenv.h>
+#include <math.h> // fabs , pow . Observera vid kompilering av math.h: använd -lm (math library heter libm.so)
+#include <stdbool.h> // bool
 
 #include "libcomponent.h"
 
-// Tomas Johansson, Bibliotek 3, libcomponent.so
+// 12 grundvärden är definierade i arrayen nedan, men värdena kan också vara tiopotenser av dessa
+// t.ex. 82000 eller 0.0082.
+const long double E12_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 , 4.70, 5.60, 6.80, 8.20  };
 
-float FLOAT_DELTA_VALUE_FOR_SORTING = 0.000000001;
+// Konstanterna nedan definierar hur små och stora tiopotenser acv E12-värden ovan som programmet försöker klara av.
+const int maxMinusPower = 7; // 1^-7 dvs ett upphöjt till -7
+const int maxPlusPower = 7; // 1^7
 
-int cmpfunc(const void * a, const void * b) {
+// Storleken 500 nedan räcker för en stor array med E12-värden mellan 10^-20 och 10^20
+static long double values[500]; // det funakr INTE att skriva "maxMinusPower+maxPlusPower+1" innanför hakparentserna
+static int numberOfArrayItems = 0; // faktiska antalet element i arrayen som används
+
+
+// antalet decimaler nedan är inte vetenskapligt utvalt, och om man vill kunna använda minimalt små E12-värden får man nog försöka justera värdet.
+const long double DELTA_VALUE_FOR_EQUALITY = 0.0000001;
+
+int sortingDescending(const void * a, const void * b) {
 	float val1 = *(float*)a;
 	float val2 = *(float*)b;
 	float diff = val1 - val2;
-	if(fabs(diff) < FLOAT_DELTA_VALUE_FOR_SORTING) return 0;
+	if(fabs(diff) < DELTA_VALUE_FOR_EQUALITY) return 0;
 	if(diff < 0) return 1; // returnerar positivt tal för att sortera i minskande ordning
 	return -1;
 }
 
+// Initierings-funktionen behöver bara anropas en gång, och då sätter den numberOfArrayItems till en siffra större än 0,
+// vilket därför kan utnyttjas för att innan anrop kontrollera om anrop behövs.
+// Funktionen kommer att populera en stor array med E12-värden tillhörande olika tiopotenser.
+// t.ex. dessa: 1.00,  1.20,  1.50 ...
+// ock också t.ex. dessa: 0.00001,  0.000012,  0.000015
+// ock också t.ex. dessa: 1000000, 1200000 1500000 ...
+void initializeArrayWithE12valuesOfDifferentPowers() {
+	int numberOfValuesPerE12sequence = sizeof(E12_VALUES) / sizeof(long double); // istället för att hårdkdoa 12
 
-
-int e_resistance(float orig_resistance, float *res_array) {
-	long double e12_values[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 , 4.70, 5.60, 6.80, 8.20  };
-	int numberOfValuesPerE12sequence = sizeof(e12_values) / sizeof(long double); // istället för att hårdkdoa 12
-	int maxMinusPower = 7; // 1^-7 dvs ett upphöjt till -7
-	int maxPlusPower = 7; // 1^7
 	int arrayIndex = 0;
-	int numberOfArrayItems = numberOfValuesPerE12sequence * (maxMinusPower + maxPlusPower + 1);
-	long double values[numberOfArrayItems];
-
-	long double powerFactorDouble;
+	long double powerFactor;
 
 	for(int i=-maxMinusPower; i<=maxPlusPower; i++) {
-		powerFactorDouble = pow(10, i);
-		for(int j=0; j<12; j++) {
-			long double value = powerFactorDouble * e12_values[j];
-			values[arrayIndex] = value;
-			arrayIndex++;
+		powerFactor = pow(10, i);
+		for(int j=0; j < numberOfValuesPerE12sequence; j++) {
+			long double value = powerFactor * E12_VALUES[j];
+			values[arrayIndex++] = value;
 		}
 	}
-	for(int i=0; i<numberOfArrayItems; i++) {
-		// printf("e_resistance arr i : %Lg \n", values[i]);
-	}
-	
-	long double delta = 0.00001;
-	long double sum_ij;
-	
-	long double sum_ijk;
+	numberOfArrayItems = arrayIndex; // = numberOfValuesPerE12sequence * (maxMinusPower + maxPlusPower + 1);
+}
+
+int iterateArrayWithE12valuesAndTryToSumCombinationOfValues(float orig_resistance, float *res_array) {
+	// Det finns naturligtvis ENORM potential att skriva om den här funktkionen på ett bättre sätt..
+	// Exempel: Om man skickar in parametern orig_resistance=100000
+	// så kommer loopen ändå börja med att prova summering av värden 0.0000001 + 0.00000012 o.s.v.
+	// men eftersom det här inte är en algoritm-kurs så ska det inte spela någon roll.
+	// Citat av läraren: "Det är ju inte en programmeringskurs utan det viktiga med kursen är att ni ska samarbeta kring ett litet programmeringsprojekt."
+	// http://www.moodle2.tfe.umu.se/mod/forum/discuss.php?d=3585
+
+	long double sum_of_three_values;
+	long double sum_of_two_values;
 	int loopCounter = 0;
-	// syftet med yttersta while-loopen är att företrädesvis välja endast ett värde, och i andra hand två värden, och som sista utväg tre värden
+	// Syftet med yttersta while-loopen nedan är att företrädesvis välja endast ett värde, och i andra hand två värden, och som sista utväg tre värden
 	// därför loopas först alla värden för att se om de ensamma kan summer till önskat värde,
-	// sedan summeras alla kombinationer av två värden, och sist alla kombinationer av tre värden
+	// sedan summeras alla kombinationer av två värden, och sist alla kombinationer av tre värden.
+	// Ett exempel är att 61 kan erhållas genom av summering med E12-värden 33+27+1
+	// men ett "bättre" (färre komponenter) är att summera två E12-värden 39+22.
 	while(loopCounter < 3) {
 		loopCounter++;
 		for(int i=0; i<numberOfArrayItems-2; i++) {
-			if(fabs(orig_resistance-values[i]) < delta) {
+			if( fabs(orig_resistance - values[i]) < DELTA_VALUE_FOR_EQUALITY) {
 				res_array[0] = values[i];
 				return 1;
 			}
-			if(loopCounter == 1) continue;
+			if(loopCounter == 1) continue; // Eftersom man föredrar matchning med ett värde kör vi bara igenom alla värden en gång först
 			for(int j=i+1; j<numberOfArrayItems-1; j++) {
-				sum_ij = values[i] + values[j];
-				if(fabs(orig_resistance-sum_ij) < delta) {
+				sum_of_two_values = values[i] + values[j];
+				if( fabs(orig_resistance - sum_of_two_values) < DELTA_VALUE_FOR_EQUALITY) {
 					res_array[0] = values[i];
 					res_array[1] = values[j];
-					qsort(res_array, 2, sizeof(float), cmpfunc);
+					qsort(res_array, 2, sizeof(float), sortingDescending);
 					return 2;
 				}
-				if(loopCounter == 2) continue;
+				if(loopCounter == 2) continue; // Andra varvet i while-loopen försöker vi hitta alla kombinationer med två värden
 				for(int k=j+1; k<numberOfArrayItems; k++) {
-					sum_ijk = values[i] + values[j] + values[k];
-					if(fabs(orig_resistance-sum_ijk) < delta) {
+					sum_of_three_values = values[i] + values[j] + values[k];
+					if( fabs(orig_resistance - sum_of_three_values) < DELTA_VALUE_FOR_EQUALITY) {
 						res_array[0] = values[i];
 						res_array[1] = values[j];
 						res_array[2] = values[k];
-						qsort(res_array, 3, sizeof(float), cmpfunc);
+						qsort(res_array, 3, sizeof(float), sortingDescending);
 						return 3;
 					}
 				}
@@ -89,4 +100,10 @@ int e_resistance(float orig_resistance, float *res_array) {
 		}
 	}
 	return 0;
+}
+
+int e_resistance(float orig_resistance, float *res_array) {
+	bool areValuesInitialized = numberOfArrayItems > 0;
+	if(!areValuesInitialized) initializeArrayWithE12valuesOfDifferentPowers();
+	return iterateArrayWithE12valuesAndTryToSumCombinationOfValues( orig_resistance, res_array);
 }

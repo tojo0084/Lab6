@@ -12,15 +12,17 @@
 # project, except GTEST_HEADERS, which you can use in your own targets
 # but shouldn't modify.
 
+#ROOT_DIR = .
+ROOT_DIR = $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GTEST_DIR = tests/gtest
-
-ROOT_DIR = .
+GTEST_DIR = $(ROOT_DIR)/tests/gtest
 
 # Where to find user code.
-SRC_DIR = src
-TEST_SRC_DIR = tests
+SRC_DIR = $(ROOT_DIR)/src
+TEST_SRC_DIR = $(ROOT_DIR)/tests
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
@@ -32,7 +34,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread -I$(SRC_DIR)
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = libresistance_tests
+TESTS = $(ROOT_DIR)/libresistance_tests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -41,15 +43,24 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 
 # House-keeping build targets.
 
-all : libresistance.so $(TESTS)
+all : $(ROOT_DIR)/libresistance.so $(TESTS)
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o *.so
+	@echo $(ROOT_DIR)
+	rm -f $(TESTS) $(ROOT_DIR)/gtest.a $(ROOT_DIR)/gtest_main.a $(ROOT_DIR)/*.o $(ROOT_DIR)/*.so
 
 test : all
 	@echo "Running tests!"
 	@$(ROOT_DIR)/libresistance_tests
 	@echo "Tests done"
+
+install: all
+	@echo Installing to /usr/local
+	cp $(ROOT_DIR)/libresistance.so /usr/local/lib
+
+uninstall:
+	@echo Uninstalling...
+	rm -f /usr/local/lib/libresistance.so
 
 # Builds gtest.a and gtest_main.a.
 
@@ -61,30 +72,30 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
-gtest-all.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+$(ROOT_DIR)/gtest-all.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c -o $@ \
             $(GTEST_DIR)/src/gtest-all.cc
 
-gtest_main.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+$(ROOT_DIR)/gtest_main.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c -o $@\
             $(GTEST_DIR)/src/gtest_main.cc
 
-gtest.a : gtest-all.o
+$(ROOT_DIR)/gtest.a : $(ROOT_DIR)/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
-gtest_main.a : gtest-all.o gtest_main.o
+$(ROOT_DIR)/gtest_main.a : $(ROOT_DIR)/gtest-all.o $(ROOT_DIR)/gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 # Builds a sample test.  A test should link with either gtest.a or
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-libresistance.so : $(SRC_DIR)/libresistance.c $(SRC_DIR)/libresistance.h
+$(ROOT_DIR)/libresistance.so : $(SRC_DIR)/libresistance.c $(SRC_DIR)/libresistance.h
 	$(CC) -shared -fPIC $< -o $@
 
-libresistance_tests.o : $(TEST_SRC_DIR)/libresistance_tests.c \
+$(ROOT_DIR)/libresistance_tests.o : $(TEST_SRC_DIR)/libresistance_tests.c \
                      $(SRC_DIR)/libresistance.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TEST_SRC_DIR)/libresistance_tests.c
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $(TEST_SRC_DIR)/libresistance_tests.c
 
-libresistance_tests : libresistance_tests.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -L$(ROOT_DIR) -lresistance -lpthread $^ -o $@
+$(ROOT_DIR)/libresistance_tests : $(ROOT_DIR)/libresistance_tests.o $(ROOT_DIR)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -L$(ROOT_DIR) -Wl,-rpath,$(ROOT_DIR) -lresistance -lpthread -o $@ $^

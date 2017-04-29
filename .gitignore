@@ -32,7 +32,5 @@
 *.dSYM/
 *.su
 
-# test ignorerar både kataloger och filer men det vill vi inte utan jag vill bara ignorera den binärfil som jag skapar vid kompileringen
-# http://stackoverflow.com/questions/16770282/how-to-gitignore-only-files/16770464#16770464
-test
-!test/
+libcomponent/build/
+libcomponent/lib/

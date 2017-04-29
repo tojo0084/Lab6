@@ -73,6 +73,8 @@ int iterateArrayWithE12valuesAndTryToSumCombinationOfValues(float orig_resistanc
 	// sedan summeras alla kombinationer av två värden, och sist alla kombinationer av tre värden.
 	// Ett exempel är att 61 kan erhållas genom av summering med E12-värden 33+27+1
 	// men ett "bättre" (färre komponenter) är att summera två E12-värden 39+22.
+	// Se även kommentaren i test-funktionen "test_e_resistance_61" som även förklarar varför man inte kan utgå från det högsta
+	// matchande värdet och sedan fortsätta med diffarna.
 	while(loopCounter < 3) {
 		loopCounter++;
 		for(int i=0; i<numberOfArrayItems-2; i++) {

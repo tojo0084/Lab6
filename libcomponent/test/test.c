@@ -84,6 +84,29 @@ void test_e_resistance_4_7(void) {
 	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 4.7, res_array[0]);
 }
 
+void test_e_resistance_61(void) {
+	// Exemplet med 61 illustrerar ganska bra att algoritmen inte kan implementeras så enkelt som man skulle kunna hoppas.
+	// Den motvisar nämligen vad jag först tänkte mig, nämligen att man skulle kunna först välja det högsta värdet som samtidigt
+	// inte är för stort, och sedan fyllar man på i eventudell diff med nästa värde, och samma princip för det ev tredje sista värdet.
+	// E12-värden (bra att ha lättillgängliga när man läser detta exempel nedan):
+	// { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 , 4.70, 5.60, 6.80, 8.20  };
+	// Den metodiken skulle dock resultera i följande:
+	// Först hittar man 5.6 (det största mindre än 6.1) och då blir diffen 0.5 och dår blir det största värdet 0.47
+	// och då blir den sista diffen 0.03 men det finns inget sådan E12-värde så därför misslyckas den simpla algoritmen.
+
+	// Därför måste man vara beredd att kombniera fler värden, t.ex. följande:
+	// 3.3 + 2.7 + 0.1 = 6.1
+	// Men också:
+	// 3.9 + 2.2 = 6.1
+	// Jag har valt ett implementera det sistnämnda, d.v.s. förutsätter att man vill ha så få som möjligt,
+	// och desutom tolkade jag ett exempel i uppgiften som det är meningen att det första ska sorteras först.
+	count = e_resistance(6.1, res_array);
+	TEST_ASSERT_EQUAL_INT(2, count);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 3.9, res_array[0]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 2.2, res_array[1]);
+}
+
+
 void test_e_resistance_E12_values_matchingWithoutSumming(void) {
 	// E12_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 , 4.70, 5.60, 6.80, 8.20  };
 
@@ -115,6 +138,8 @@ int main(void) {
 	RUN_TEST(test_e_resistance_01200);
 	RUN_TEST(test_e_resistance_01380);
 	RUN_TEST(test_e_resistance_01398);
+
+	RUN_TEST(test_e_resistance_61);
 
 	RUN_TEST(test_e_resistance_E12_values_matchingWithoutSumming);
  // testet nedan lade jag till när jag upptäckte ett fel i testet ovan

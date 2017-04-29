@@ -32,5 +32,4 @@
 *.dSYM/
 *.su
 
-libcomponent/build/
-libcomponent/lib/
+build/

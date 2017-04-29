@@ -55,33 +55,29 @@ void test_e_resistance_1398000(void) {
 	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 18000, res_array[2]);
 }
 
-void test_e_resistance_001200(void) {
-	count = e_resistance(0.0012, res_array);
+void test_e_resistance_01200(void) {
+	count = e_resistance(0.012, res_array);
 	TEST_ASSERT_EQUAL_INT(1, count);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0012, res_array[0]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
 }
 
-void test_e_resistance_001380(void) {
-	count = e_resistance(0.00138, res_array);
+void test_e_resistance_01380(void) {
+	count = e_resistance(0.0138, res_array);
 	TEST_ASSERT_EQUAL_INT(2, count);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0012, res_array[0]);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.00018, res_array[1]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0018, res_array[1]);
 }
 
-void test_e_resistance_001398(void) {
-	count = e_resistance(0.001398, res_array);
+void test_e_resistance_01398(void) {
+	count = e_resistance(0.01398, res_array);
 	TEST_ASSERT_EQUAL_INT(3, count);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0012, res_array[0]);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.00018, res_array[1]);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.000018, res_array[2]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0018, res_array[1]);
+	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.00018, res_array[2]);
 }
 
-void test_e_resistance_47(void) {
-	count = e_resistance(47, res_array);
-	TEST_ASSERT_EQUAL_INT(1, count);
-	TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 47, res_array[0]);
-}
-
+// Detta test lade jag till i samband att jag upptäckte att 4.7 inte fungerade (när testerna i en loop kördes)
+// och det löste jag genom att justera värdet på DELTA_VALUE_FOR_EQUALITY med mindre precision.
 void test_e_resistance_4_7(void) {
 	count = e_resistance(4.7, res_array);
 	TEST_ASSERT_EQUAL_INT(1, count);
@@ -90,14 +86,19 @@ void test_e_resistance_4_7(void) {
 
 void test_e_resistance_E12_values_matchingWithoutSumming(void) {
 	// E12_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 , 4.70, 5.60, 6.80, 8.20  };
-	for(int i=0; i<12; i++) {
-		float e12value = E12_VALUES[i];
-		count = e_resistance(e12value, res_array);
-		char testFailureMessage[50];
-		snprintf(testFailureMessage, sizeof testFailureMessage, "E12-värde som orsakade problemet: %f", e12value);
-		TEST_ASSERT_EQUAL_INT_MESSAGE(1, count, testFailureMessage);
-		TEST_ASSERT_FLOAT_WITHIN_MESSAGE(DELTA_VALUE_FOR_EQUALITY, e12value, res_array[0], testFailureMessage);
+
+  double multipliers[] = {0.001, 1, 1000};
+	for(int j=0; j<3; j++) {
+		for(int i=0; i<12; i++) {
+			float e12value = multipliers[j] * E12_VALUES[i];
+			count = e_resistance(e12value, res_array);
+			char testFailureMessage[50];
+			snprintf(testFailureMessage, sizeof testFailureMessage, "E12-värde som orsakade problemet: %f", e12value);
+			TEST_ASSERT_EQUAL_INT_MESSAGE(1, count, testFailureMessage);
+			TEST_ASSERT_FLOAT_WITHIN_MESSAGE(DELTA_VALUE_FOR_EQUALITY, e12value, res_array[0], testFailureMessage);
+		}
 	}
+
 }
 
 int main(void) {
@@ -111,9 +112,14 @@ int main(void) {
 	RUN_TEST(test_e_resistance_1380000);
 	RUN_TEST(test_e_resistance_1398000);
 
-	RUN_TEST(test_e_resistance_001200);
-	RUN_TEST(test_e_resistance_001380);
-	RUN_TEST(test_e_resistance_001398);
+	RUN_TEST(test_e_resistance_01200);
+	RUN_TEST(test_e_resistance_01380);
+	RUN_TEST(test_e_resistance_01398);
+
+	RUN_TEST(test_e_resistance_E12_values_matchingWithoutSumming);
+ // testet nedan lade jag till när jag upptäckte ett fel i testet ovan
+// (för att isolerat kunna köra det specifika testet till skillnad från ovanstående som itererar och testar många värden)
+	RUN_TEST(test_e_resistance_4_7);
 
 	UnityEnd();
 

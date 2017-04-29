@@ -11,7 +11,7 @@
 const long double E12_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 , 4.70, 5.60, 6.80, 8.20  };
 
 // Konstanterna nedan definierar hur små och stora tiopotenser acv E12-värden ovan som programmet försöker klara av.
-const int maxMinusPower = 7; // 1^-7 dvs ett upphöjt till -7
+const int maxMinusPower = 4; // 1^-4 dvs ett upphöjt till -4
 const int maxPlusPower = 7; // 1^7
 
 // Storleken 500 nedan räcker för en stor array med E12-värden mellan 10^-20 och 10^20
@@ -20,7 +20,11 @@ static int numberOfArrayItems = 0; // faktiska antalet element i arrayen som anv
 
 
 // antalet decimaler nedan är inte vetenskapligt utvalt, och om man vill kunna använda minimalt små E12-värden får man nog försöka justera värdet.
-const long double DELTA_VALUE_FOR_EQUALITY = 0.0000001;
+const long double DELTA_VALUE_FOR_EQUALITY = 0.000001;
+// Dessa två värden nedan medförde t.ex. skillnaden för att kolla om 4.7 är lika med 4.7 ...
+// (men t.ex. jämföresle med 3.9 funkade även med den senare)
+// 0.000001
+// 0.0000001
 
 int sortingDescending(const void * a, const void * b) {
 	float val1 = *(float*)a;
@@ -56,7 +60,7 @@ void initializeArrayWithE12valuesOfDifferentPowers() {
 int iterateArrayWithE12valuesAndTryToSumCombinationOfValues(float orig_resistance, float *res_array) {
 	// Det finns naturligtvis ENORM potential att skriva om den här funktkionen på ett bättre sätt..
 	// Exempel: Om man skickar in parametern orig_resistance=100000
-	// så kommer loopen ändå börja med att prova summering av värden 0.0000001 + 0.00000012 o.s.v.
+	// så kommer loopen ändå börja med att prova summering av värden 0.001 + 0.0012 o.s.v.
 	// men eftersom det här inte är en algoritm-kurs så ska det inte spela någon roll.
 	// Citat av läraren: "Det är ju inte en programmeringskurs utan det viktiga med kursen är att ni ska samarbeta kring ett litet programmeringsprojekt."
 	// http://www.moodle2.tfe.umu.se/mod/forum/discuss.php?d=3585

@@ -1,6 +1,6 @@
 // Tomas Johansson, Bibliotek 3, libcomponent.so
 
-// gcc test.c unity/unity.c ../main/libcomponent.c -lm -o test
+// gcc libcomponent_tests.c unity/unity.c ../main/libcomponent.c -lm -o libcomponent_tests
 // -lm är för att kompilera math.h (math library is named libm.so)
 
 #include "unity/unity.h"
@@ -87,8 +87,8 @@ void test_e_resistance_4_7(void) {
 }
 
 void test_e_resistance_61(void) {
-  // Exemplet med 61 illustrerar ganska bra att algoritmen inte kan
-  // implementeras så enkelt som man skulle kunna hoppas.
+  // Det här testet som använder parametern 6.1 illustrerar ganska bra att
+  // algoritmen inte kan implementeras så enkelt som man skulle kunna hoppas.
   // Den motvisar nämligen vad jag först tänkte mig, nämligen att man skulle
   // kunna först välja det högsta värdet som samtidigt
   // inte är för stort, och sedan fyllar man på i eventudell diff med nästa
@@ -100,16 +100,16 @@ void test_e_resistance_61(void) {
   // Först hittar man 5.6 (det största mindre än 6.1) och då blir diffen 0.5 och
   // dår blir det största värdet 0.47
   // och då blir den sista diffen 0.03 men det finns inget sådan E12-värde så
-  // därför misslyckas den simpla algoritmen.
+  // därför skulle den den simpla algoritmen misslyckas.
 
-  // Därför måste man vara beredd att kombniera fler värden, t.ex. följande:
+  // Därför måste man försöka kombinera värden på annat sätt, t.ex. följande:
   // 3.3 + 2.7 + 0.1 = 6.1
   // Men också:
   // 3.9 + 2.2 = 6.1
   // Jag har valt ett implementera det sistnämnda, d.v.s. förutsätter att man
   // vill ha så få som möjligt,
-  // och desutom tolkade jag ett exempel i uppgiften som det är meningen att det
-  // första ska sorteras först.
+  // och dessutom tolkade jag ett exempel i uppgiften som det är meningen
+  // att det största ska sorteras först.
   count = e_resistance(6.1, res_array);
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 3.9, res_array[0]);

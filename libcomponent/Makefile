@@ -4,6 +4,7 @@
 # "install" Här kopierar du både programmet och biblioteken till lämpliga kataloger (tex /usr/bin/ och /usr/lib/) och länkar så att programmet använder de publika biblioteken.
 # Dessutom lämpligt med följande:
 # "test" är egentligen inte ett krav men kan i det här fallet vara "programmet" dvs "all" ovan, med andra ord: "all" medför både "test" och "lib"
+# Desutom har jag lagt till target "uninstall"
 
 # Tomas Johansson
 
@@ -41,5 +42,13 @@ build/obj/libcomponent_tests.o:
 clean:
 	rm -f lib/* build/libcomponent_tests build/obj/*.*
 
-# ToDo:
-# install:
+
+install: lib/libcomponent.a build/libcomponent_tests
+	sudo cp lib/libcomponent.a /usr/local/lib/
+	sudo cp build/libcomponent_tests /usr/local/bin/
+#	ln -s /usr/local/bin/libcomponent_tests ./libcomponent_tests
+# ToDo: I vilken katalog ska länken placeras ?
+# "install. Här kopierar du både programmet och biblioteken till lämpliga kataloger (tex /usr/bin/ och /usr/lib/) och länkar så att programmet använder de publika biblioteken."
+uninstall:
+	sudo rm -f /usr/local/lib/libcomponent.a /usr/local/bin/libcomponent_tests
+#	rm -f ./libcomponent_tests

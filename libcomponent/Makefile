@@ -11,18 +11,19 @@
 all: lib test
 
 
-lib: build/obj lib/libcomponent.a
+lib: build/obj lib/libcomponent.so
 
 
 build/obj:
 	mkdir -p build/obj
 
-lib/libcomponent.a: build/obj/libcomponent.o
+lib/libcomponent.so: build/obj/libcomponent.o
 	mkdir -p lib
-	ar crv lib/libcomponent.a build/obj/libcomponent.o
+	gcc -shared -fPIC -o lib/libcomponent.so build/obj/libcomponent.o
+#	ar crv lib/libcomponent.a build/obj/libcomponent.o
 
 build/obj/libcomponent.o: main/libcomponent.c main/libcomponent.h
-	gcc -c main/libcomponent.c -o build/obj/libcomponent.o
+	gcc -c -fPIC main/libcomponent.c -o build/obj/libcomponent.o
 
 
 test: build/obj build/libcomponent_tests
@@ -43,12 +44,12 @@ clean:
 	rm -f lib/* build/libcomponent_tests build/obj/*.*
 
 
-install: lib/libcomponent.a build/libcomponent_tests
-	sudo cp lib/libcomponent.a /usr/local/lib/
+install: lib/libcomponent.so build/libcomponent_tests
+	sudo cp lib/libcomponent.so /usr/local/lib/
 	sudo cp build/libcomponent_tests /usr/local/bin/
 #	ln -s /usr/local/bin/libcomponent_tests ./libcomponent_tests
 # ToDo: I vilken katalog ska länken placeras ?
 # "install. Här kopierar du både programmet och biblioteken till lämpliga kataloger (tex /usr/bin/ och /usr/lib/) och länkar så att programmet använder de publika biblioteken."
 uninstall:
-	sudo rm -f /usr/local/lib/libcomponent.a /usr/local/bin/libcomponent_tests
+	sudo rm -f /usr/local/lib/libcomponent.so /usr/local/bin/libcomponent_tests
 #	rm -f ./libcomponent_tests

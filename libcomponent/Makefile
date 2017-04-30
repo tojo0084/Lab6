@@ -8,6 +8,8 @@
 
 # Tomas Johansson
 
+# ToDo: refaktorisera makefilen t.ex. en variabel för C-versionen (t.ex. -std=c99 ) som kan ändras på ett ställe
+
 all: lib test
 
 
@@ -19,24 +21,24 @@ build/obj:
 
 lib/libcomponent.so: build/obj/libcomponent.o
 	mkdir -p lib
-	gcc -shared -fPIC -o lib/libcomponent.so build/obj/libcomponent.o
+	gcc -std=c99 -shared -fPIC -o lib/libcomponent.so build/obj/libcomponent.o
 #	ar crv lib/libcomponent.a build/obj/libcomponent.o
 
-build/obj/libcomponent.o: main/libcomponent.c main/libcomponent.h
-	gcc -c -fPIC main/libcomponent.c -o build/obj/libcomponent.o
+build/obj/libcomponent.o: build/obj main/libcomponent.c main/libcomponent.h
+	gcc -std=c99 -c -fPIC main/libcomponent.c -o build/obj/libcomponent.o
 
 
 test: build/obj build/libcomponent_tests
 	./build/libcomponent_tests
 
 build/libcomponent_tests: build/obj/unity.o build/obj/libcomponent.o build/obj/libcomponent_tests.o
-	gcc build/obj/unity.o build/obj/libcomponent.o build/obj/libcomponent_tests.o -lm -o build/libcomponent_tests
+	gcc -std=c99 build/obj/unity.o build/obj/libcomponent.o build/obj/libcomponent_tests.o -lm -o build/libcomponent_tests
 
-build/obj/unity.o:
-	gcc -c test/unity/unity.c -o build/obj/unity.o
+build/obj/unity.o: build/obj
+	gcc -std=c99 -c test/unity/unity.c -o build/obj/unity.o
 
-build/obj/libcomponent_tests.o:
-	gcc -c test/libcomponent_tests.c -o build/obj/libcomponent_tests.o
+build/obj/libcomponent_tests.o: build/obj
+	gcc -std=c99 -c test/libcomponent_tests.c -o build/obj/libcomponent_tests.o
 
 
 
@@ -52,4 +54,4 @@ install: lib/libcomponent.so build/libcomponent_tests
 # "install. Här kopierar du både programmet och biblioteken till lämpliga kataloger (tex /usr/bin/ och /usr/lib/) och länkar så att programmet använder de publika biblioteken."
 uninstall:
 	sudo rm -f /usr/local/lib/libcomponent.so /usr/local/bin/libcomponent_tests
-#	rm -f ./libcomponent_tests
+# rm -f ./libcomponent_tests # länken

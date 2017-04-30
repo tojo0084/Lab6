@@ -25,12 +25,19 @@ TEST(CalcResistance, HandlesNullArray) {
 TEST(CalcResistance, HandlesFaultyCount) {
   float array[] = {0, 0, 0};
   EXPECT_EQ(-1, calc_resistance(-1, 'P', array));
+  EXPECT_EQ(-1, calc_resistance(0, 'P', array));
 }
 
 // Test that the calc_resistance() method handles zero resistance in parallel
 // coupling.
 TEST(CalcResistance, HandlesZeroReistanceInParallel) {
-  float array[] = {100, 0, 400};
+  float array[] = {100, 200, 0};
+  EXPECT_EQ(-1, calc_resistance(3, 'P', array));
+  array[2] = 400;
+  array[1] = 0;
+  EXPECT_EQ(-1, calc_resistance(3, 'P', array));
+  array[1] = 200;
+  array[0] = 0;
   EXPECT_EQ(-1, calc_resistance(3, 'P', array));
 }
 
@@ -44,6 +51,14 @@ TEST(CalcResistance, HandlesParallel) {
 TEST(CalcResistance, HandlesSeries) {
   float array[] = {100, 200, 400};
   EXPECT_EQ(700, calc_resistance(3, 'S', array));
+}
+
+// Test that the calc_resistance() method handles incorrect coupling.
+TEST(CalcResistance, HandlesIncorrectCoupling) {
+  float array[] = {100, 200, 400};
+  EXPECT_EQ(-1, calc_resistance(3, 'X', array));
+  EXPECT_EQ(-1, calc_resistance(3, 'p', array));
+  EXPECT_EQ(-1, calc_resistance(3, 's', array));
 }
 
 } // namespace

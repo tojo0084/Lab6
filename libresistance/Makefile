@@ -93,9 +93,10 @@ $(ROOT_DIR)/gtest_main.a : $(ROOT_DIR)/gtest-all.o $(ROOT_DIR)/gtest_main.o
 $(ROOT_DIR)/libresistance.so : $(SRC_DIR)/libresistance.c $(SRC_DIR)/libresistance.h
 	$(CC) -shared -fPIC $< -o $@
 
-$(ROOT_DIR)/libresistance_tests.o : $(TEST_SRC_DIR)/libresistance_tests.c \
-                     $(SRC_DIR)/libresistance.h $(GTEST_HEADERS)
+$(ROOT_DIR)/libresistance_tests.o : $(ROOT_DIR)/libresistance.so \
+									$(TEST_SRC_DIR)/libresistance_tests.c \
+									$(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $(TEST_SRC_DIR)/libresistance_tests.c
 
-$(ROOT_DIR)/libresistance_tests : $(ROOT_DIR)/libresistance_tests.o $(ROOT_DIR)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -L$(ROOT_DIR) -Wl,-rpath,$(ROOT_DIR) -lresistance -lpthread -o $@ $^
+$(ROOT_DIR)/libresistance_tests : $(ROOT_DIR)/libresistance_tests.o $(ROOT_DIR)/gtest_main.a $(ROOT_DIR)/libresistance.so
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Wl,-rpath,$(ROOT_DIR) -lpthread -o $@ $^

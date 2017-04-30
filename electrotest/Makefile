@@ -11,4 +11,4 @@
 # ./electrotest
 
 all:
-	gcc -o electrotest main/electrotest.c -L. -lcomponent -lm -Wl,-rpath,/usr/local/lib/libcomponent.so
+	gcc -std=c99 -o electrotest main/electrotest.c -L. -lcomponent -lm -Wl,-rpath,/usr/local/lib/libcomponent.so

@@ -57,10 +57,11 @@ test : all
 install: all
 	@echo Installing to /usr/local
 	cp $(ROOT_DIR)/libresistance.so /usr/local/lib
+	cp $(SRC_DIR)/libresistance.h /usr/local/include/linum_lab6_resistance.h
 
 uninstall:
 	@echo Uninstalling...
-	rm -f /usr/local/lib/libresistance.so
+	rm -f /usr/local/lib/libresistance.so /usr/local/include/linum_lab6_resistance.h
 
 # Builds gtest.a and gtest_main.a.
 

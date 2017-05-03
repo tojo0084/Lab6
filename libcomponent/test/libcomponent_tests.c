@@ -6,8 +6,14 @@
 #include "unity/unity.h"
 #include "../main/libcomponent.h"
 
-// definieras i libcomponent.c
-extern const long double E12_VALUES[];
+/**
+Definieras odh dokumenteras i "libcomponent.c"
+*/
+extern const long double E12_BASE_VALUES[];
+
+/**
+Definieras odh dokumenteras i "libcomponent.c"
+*/
 extern const long double DELTA_VALUE_FOR_EQUALITY;
 
 float res_array[3];
@@ -27,11 +33,11 @@ void test_e_resistance_1380(void) {
 }
 
 void test_e_resistance_1398(void) {
-  count = e_resistance(1398000, res_array);
+  count = e_resistance(1398, res_array);
   TEST_ASSERT_EQUAL_INT(3, count);
-  TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200000, res_array[0]);
-  TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 180000, res_array[1]);
-  TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 18000, res_array[2]);
+  TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200, res_array[0]);
+  TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 180, res_array[1]);
+  TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 18, res_array[2]);
 }
 
 void test_e_resistance_1200000(void) {
@@ -80,6 +86,11 @@ void test_e_resistance_01398(void) {
 // (när testerna i en loop kördes)
 // och det löste jag genom att justera värdet på DELTA_VALUE_FOR_EQUALITY med
 // mindre precision.
+// Dessa två värden nedan medförde t.ex. skillnaden för att kolla om 4.7 är lika
+// med 4.7 ...
+// (men t.ex. jämföresle med 3.9 funkade även med den senare)
+// 0.000001
+// 0.0000001
 void test_e_resistance_4_7(void) {
   count = e_resistance(4.7, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
@@ -117,13 +128,13 @@ void test_e_resistance_61(void) {
 }
 
 void test_e_resistance_E12_values_matchingWithoutSumming(void) {
-  // E12_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 ,
+  // E12_BASE_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 ,
   // 4.70, 5.60, 6.80, 8.20  };
 
   double multipliers[] = {0.001, 1, 1000};
   for (int j = 0; j < 3; j++) {
     for (int i = 0; i < 12; i++) {
-      float e12value = multipliers[j] * E12_VALUES[i];
+      float e12value = multipliers[j] * E12_BASE_VALUES[i];
       count = e_resistance(e12value, res_array);
       char testFailureMessage[50];
       snprintf(testFailureMessage, sizeof testFailureMessage,

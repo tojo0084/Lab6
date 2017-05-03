@@ -43,7 +43,8 @@ build/obj/libcomponent_tests.o: build/obj
 
 
 clean:
-	rm -f lib/* build/libcomponent_tests build/obj/*.*
+#	rm -f lib/* build/libcomponent_tests build/obj/*.*
+	rm -r lib build
 
 
 install: lib/libcomponent.so build/libcomponent_tests

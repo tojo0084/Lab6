@@ -93,13 +93,17 @@ void get_comps(Electro *e) {
   e->comps = malloc(e->count*sizeof(float));
 
   for(int i= 0;i <= e->count-1;i++) {
-    printf("Komponent %d i Ohm: ",i+1);
-    fgets(str,MAXWORDS,stdin);
-    float res = (float)strtol(str,&check,10);
-    if(strlen(check)>1){
-      fprintf(stderr,"Input must be a value\n");
-    }else{
-      e->comps[i] = res;
+    while(true) {
+      printf("Komponent %d i Ohm: ",i+1);
+      fgets(str,MAXWORDS,stdin);
+      float res;
+      int numberOfSuccessfullyFilledVariables = sscanf(str, "%f", &res);
+      if(numberOfSuccessfullyFilledVariables != 1){
+        fprintf(stderr,"Input must be a value\n");
+      }else{
+        e->comps[i] = res;
+        break;
+      }
     }
   }
 }

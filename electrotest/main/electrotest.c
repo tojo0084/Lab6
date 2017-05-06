@@ -1,4 +1,14 @@
 #include "electrotest.h"
+#include <stdbool.h> // bool
+#include <ctype.h> // toupper
+
+static bool is_P_or_S_ignoringCaseAndTerminatingCharacter(char *str) {
+  int numberOfInitialCharacters_P_or_S = strspn(str, "SPsp");
+  //printf("\n numberOfInitialCharacters_P_or_S : %d", numberOfInitialCharacters_P_or_S);
+  int lengthOfInputLineIncludingTerminatingCharacter = strlen(str);
+  //printf("\n lengthOfInputLineIncludingTerminatingCharacter : %d", lengthOfInputLineIncludingTerminatingCharacter);
+  return numberOfInitialCharacters_P_or_S == 1 && lengthOfInputLineIncludingTerminatingCharacter <=2;
+}
 
 int main(void) {
   float res=0;
@@ -36,9 +46,9 @@ void get_voltage(Electro *e) {
   char str[MAXWORDS];
   char *check;
   float temp = 0;
-
   printf("Ange spänningskälla i V: ");
   fgets(str,MAXWORDS,stdin);
+
   temp = (float)strtol(str,&check,10);
 
   if(strlen(check)>1){
@@ -51,18 +61,15 @@ void get_voltage(Electro *e) {
 
 void get_conn(Electro *e) {
   char str[MAXWORDS];
-  char *check;
-  long int temp = 0;
 
   printf("Ange koppling[S | P]: ");
   fgets(str,MAXWORDS,stdin);
-  temp = strtol(str,&check,10);
 
-  if(temp != 0 || strlen(check)>2) {
+  if(!is_P_or_S_ignoringCaseAndTerminatingCharacter(str)) {
     fprintf(stderr,"Input must be either P or S\n");
     get_conn(e);
   }else{
-    e->conn = str[0];
+    e->conn = toupper(str[0]); // calc_resistance kräver f.n. versal
   }
 }
 

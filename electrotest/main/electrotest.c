@@ -1,4 +1,5 @@
 #include "electrotest.h"
+#include <stdbool.h> // bool
 
 int main(void) {
   float res=0;
@@ -71,14 +72,20 @@ void get_comps(Electro *e) {
   char *check;
   int temp=0;
 
-  printf("Antal komponenter: ");
-  fgets(str,MAXWORDS,stdin);
-  temp = (int)strtol(str,&check,10);
+  bool isInputOk = false;
+  while(!isInputOk) {
+    printf("Antal komponenter: ");
+    fgets(str,MAXWORDS,stdin);
+    temp = (int)strtol(str,&check,10);
 
-  if(strlen(check)>1) {
-    fprintf(stderr,"Input must be an integer\n");
-    get_comps(e);
+    if(strlen(check)>1) {
+      fprintf(stderr,"Input must be an integer\n");
+    }
+    else {
+      isInputOk = true;
+    }
   }
+
   e->count = temp;
   e->comps = malloc(e->count*sizeof(float));
 

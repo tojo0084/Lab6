@@ -44,14 +44,11 @@ int main(void) {
 
 void get_voltage(Electro *e) {
   char str[MAXWORDS];
-  char *check;
   float temp = 0;
   printf("Ange spänningskälla i V: ");
   fgets(str,MAXWORDS,stdin);
-
-  temp = (float)strtol(str,&check,10);
-
-  if(strlen(check)>1){
+  int numberOfSuccessfullyFilledVariables = sscanf(str, "%f", &temp);
+  if(numberOfSuccessfullyFilledVariables != 1){
     fprintf(stderr,"Input must be a value\n");
     get_voltage(e);
   }else{

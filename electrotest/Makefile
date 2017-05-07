@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-std=c11 -Wall -Wextra -Werror -pedantic -g
 LFLAGS=-lpower -lresistance -lcomponent -Wl,-rpath,.
-OBJS=power.o resistance.o component.o
+OBJS=power.o libresistance.o libcomponent.o
 LIBS=libpower.so libresistance.so libcomponent.so
 BIN=electrotest
 DIR=lib
@@ -36,20 +36,20 @@ $(BIN): electrotest.o
 libpower.so: power.o
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ power.o
 
-libresistance.so: resistance.o
-	$(CC) $(CFLAGS) -shared -fPIC -o $@ resistance.o
+libresistance.so: libresistance.o
+	$(CC) $(CFLAGS) -shared -fPIC -o $@ libresistance.o
 
-libcomponent.so: component.o
-	$(CC) $(CFLAGS) -shared -fPIC -o $@ component.o
+libcomponent.so: libcomponent.o
+	$(CC) $(CFLAGS) -shared -fPIC -o $@ libcomponent.o
 
 electrotest.o: $(OBJS)
 	$(CC) $(CFLAGS) -c -fPIC main/$*.c
 
-power.o: libpower/src/power.c libpower/src/power.h
-	$(CC) $(CFLAGS) -c -fPIC libpower/src/$*.c
+power.o: ../libpower/src/power.c ../libpower/src/power.h
+	$(CC) $(CFLAGS) -c -fPIC ../libpower/src/$*.c
 
-resistance.o: libresistance/src/resistance.c libresistance/src/resistance.h
-	$(CC) $(CFLAGS) -c -fPIC libresistance/src/$*.c
+libresistance.o: ../libresistance/src/libresistance.c ../libresistance/src/libresistance.h
+	$(CC) $(CFLAGS) -c -fPIC ../libresistance/src/$*.c
 
-component.o: libcomponent/main/component.c libcomponent/main/component.h
-	$(CC) $(CFLAGS) -c -fPIC libcomponent/main/$*.c -lm
+libcomponent.o: ../libcomponent/main/libcomponent.c ../libcomponent/main/libcomponent.h
+	$(CC) $(CFLAGS) -c -fPIC ../libcomponent/main/$*.c -lm

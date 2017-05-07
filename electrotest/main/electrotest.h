@@ -1,12 +1,12 @@
-#ifndef _ELECTROTEST_H
+	#ifndef _ELECTROTEST_H
 #define _ELECTROTEST_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "../libpower/src/power.h"
-#include "../libresistance/src/resistance.h"
-#include "../libcomponent/main/component.h"
+#include "../../libpower/src/power.h"
+#include "../../libresistance/src/libresistance.h"
+#include "../../libcomponent/main/libcomponent.h"
 
 #define MAXWORDS 1024
 

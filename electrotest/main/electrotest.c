@@ -1,4 +1,14 @@
 #include "electrotest.h"
+#include <stdbool.h> // bool
+#include <ctype.h> // toupper
+
+static bool is_P_or_S_ignoringCaseAndTerminatingCharacter(char *str) {
+  int numberOfInitialCharacters_P_or_S = strspn(str, "SPsp");
+  //printf("\n numberOfInitialCharacters_P_or_S : %d", numberOfInitialCharacters_P_or_S);
+  int lengthOfInputLineIncludingTerminatingCharacter = strlen(str);
+  //printf("\n lengthOfInputLineIncludingTerminatingCharacter : %d", lengthOfInputLineIncludingTerminatingCharacter);
+  return numberOfInitialCharacters_P_or_S == 1 && lengthOfInputLineIncludingTerminatingCharacter <=2;
+}
 
 int main(void) {
   float res=0;
@@ -34,14 +44,11 @@ int main(void) {
 
 void get_voltage(Electro *e) {
   char str[MAXWORDS];
-  char *check;
   float temp = 0;
-
   printf("Ange spänningskälla i V: ");
   fgets(str,MAXWORDS,stdin);
-  temp = (float)strtol(str,&check,10);
-
-  if(strlen(check)>1){
+  int numberOfSuccessfullyFilledVariables = sscanf(str, "%f", &temp);
+  if(numberOfSuccessfullyFilledVariables != 1){
     fprintf(stderr,"Input must be a value\n");
     get_voltage(e);
   }else{
@@ -51,18 +58,15 @@ void get_voltage(Electro *e) {
 
 void get_conn(Electro *e) {
   char str[MAXWORDS];
-  char *check;
-  long int temp = 0;
 
   printf("Ange koppling[S | P]: ");
   fgets(str,MAXWORDS,stdin);
-  temp = strtol(str,&check,10);
 
-  if(temp != 0 || strlen(check)>2) {
+  if(!is_P_or_S_ignoringCaseAndTerminatingCharacter(str)) {
     fprintf(stderr,"Input must be either P or S\n");
     get_conn(e);
   }else{
-    e->conn = str[0];
+    e->conn = toupper(str[0]); // calc_resistance kräver f.n. versal
   }
 }
 
@@ -71,25 +75,35 @@ void get_comps(Electro *e) {
   char *check;
   int temp=0;
 
-  printf("Antal komponenter: ");
-  fgets(str,MAXWORDS,stdin);
-  temp = (int)strtol(str,&check,10);
+  bool isInputOk = false;
+  while(!isInputOk) {
+    printf("Antal komponenter: ");
+    fgets(str,MAXWORDS,stdin);
+    temp = (int)strtol(str,&check,10);
 
-  if(strlen(check)>1) {
-    fprintf(stderr,"Input must be an integer\n");
-    get_comps(e);
+    if(strlen(check)>1) {
+      fprintf(stderr,"Input must be an integer\n");
+    }
+    else {
+      isInputOk = true;
+    }
   }
+
   e->count = temp;
   e->comps = malloc(e->count*sizeof(float));
 
   for(int i= 0;i <= e->count-1;i++) {
-    printf("Komponent %d i Ohm: ",i+1);
-    fgets(str,MAXWORDS,stdin);
-    float res = (float)strtol(str,&check,10);
-    if(strlen(check)>1){
-      fprintf(stderr,"Input must be a value\n");
-    }else{
-      e->comps[i] = res;
+    while(true) {
+      printf("Komponent %d i Ohm: ",i+1);
+      fgets(str,MAXWORDS,stdin);
+      float res;
+      int numberOfSuccessfullyFilledVariables = sscanf(str, "%f", &res);
+      if(numberOfSuccessfullyFilledVariables != 1){
+        fprintf(stderr,"Input must be a value\n");
+      }else{
+        e->comps[i] = res;
+        break;
+      }
     }
   }
 }

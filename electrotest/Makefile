@@ -35,7 +35,7 @@ $(OBJ_DIR):
 $(BIN): $(OBJ_DIR)/electrotest.o
 	$(CC) $(CFLAGS) -o $@ $^ -L$(LIB_DIR) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN/$(LIB_DIR)'
 
-$(LIB_DIR)/libpower.so: ../libpower/power.c ../libpower/power.h | $(LIB_DIR)
+$(LIB_DIR)/libpower.so: ../libpower/src/power.c ../libpower/src/power.h | $(LIB_DIR)
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
 $(LIB_DIR)/libresistance.so: ../libresistance/src/libresistance.c ../libresistance/src/libresistance.h | $(LIB_DIR)
@@ -45,4 +45,4 @@ $(LIB_DIR)/libcomponent.so: ../libcomponent/main/libcomponent.c ../libcomponent/
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
 $(OBJ_DIR)/electrotest.o: main/electrotest.c main/electrotest.h | $(OBJ_DIR)
-	$(CC) -I../libresistance/src -I../libcomponent/main -I../libpower $(CFLAGS) -c -o $@ $<
+	$(CC) -I../libresistance/src -I../libcomponent/main -I../libpower/src $(CFLAGS) -c -o $@ $<

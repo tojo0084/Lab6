@@ -8,9 +8,9 @@ BIN=electrotest
 DEST_LIB_DIR=/usr/local/lib
 DEST_BIN_DIR=/usr/local/bin
 
-.PHONY: all clean install uninstall
+.PHONY: all clean install uninstall lib createLibDirectory
 
-all: $(LIBS) $(BIN)
+all: lib $(BIN)
 
 clean:
 	rm -rf $(OBJ_DIR) $(LIB_DIR) electrotest
@@ -26,7 +26,9 @@ uninstall:
 	rm -f $(DEST_LIB_DIR)/libcomponent.so
 	rm -f $(DEST_BIN_DIR)/$(BIN)
 
-$(LIB_DIR): 
+lib:	$(LIBS)
+
+createLibDirectory:
 	mkdir -p $(LIB_DIR)
 
 $(OBJ_DIR):
@@ -35,13 +37,13 @@ $(OBJ_DIR):
 $(BIN): $(OBJ_DIR)/electrotest.o
 	$(CC) $(CFLAGS) -o $@ $^ -L$(LIB_DIR) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN/$(LIB_DIR)'
 
-$(LIB_DIR)/libpower.so: ../libpower/power.c ../libpower/power.h | $(LIB_DIR)
+$(LIB_DIR)/libpower.so: ../libpower/power.c ../libpower/power.h | createLibDirectory
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
-$(LIB_DIR)/libresistance.so: ../libresistance/src/libresistance.c ../libresistance/src/libresistance.h | $(LIB_DIR)
+$(LIB_DIR)/libresistance.so: ../libresistance/src/libresistance.c ../libresistance/src/libresistance.h | createLibDirectory
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
-$(LIB_DIR)/libcomponent.so: ../libcomponent/main/libcomponent.c ../libcomponent/main/libcomponent.h | $(LIB_DIR)
+$(LIB_DIR)/libcomponent.so: ../libcomponent/main/libcomponent.c ../libcomponent/main/libcomponent.h | createLibDirectory
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
 $(OBJ_DIR)/electrotest.o: main/electrotest.c main/electrotest.h | $(OBJ_DIR)

@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "../../libpower/src/power.h"
-#include "../../libresistance/src/libresistance.h"
-#include "../../libcomponent/main/libcomponent.h"
+#include "power.h"
+#include "libresistance.h"
+#include "libcomponent.h"
 
 #define MAXWORDS 1024
 

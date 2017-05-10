@@ -1,55 +1,48 @@
 CC=gcc
 CFLAGS=-std=c11 -Wall -Wextra -Werror -pedantic -g
-LFLAGS=-lpower -lresistance -lcomponent -Wl,-rpath,.
-OBJS=power.o libresistance.o libcomponent.o
-LIBS=libpower.so libresistance.so libcomponent.so
+LDFLAGS=-lpower -lresistance -lcomponent -lm
+LIB_DIR=lib
+OBJ_DIR=obj
+LIBS=$(addprefix $(LIB_DIR)/,libpower.so libresistance.so libcomponent.so)
 BIN=electrotest
-DIR=lib
-DEST_LIB=/usr/local/lib
-DEST_BIN=/usr/local/bin
+DEST_LIB_DIR=/usr/local/lib
+DEST_BIN_DIR=/usr/local/bin
 
+.PHONY: all clean install uninstall
 
-#.PHONY: all clean install uninstall
-
-all: lib $(BIN)
+all: $(LIBS) $(BIN)
 
 clean:
-	rm -rf *.o lib electrotest
+	rm -rf $(OBJ_DIR) $(LIB_DIR) electrotest
 
 install:
-	install -m 755 ./$(DIR)/*.so $(DEST_LIB)/$(LIB)
-	install -m 755 $(BIN) $(DEST_BIN)
+	install -m 755 $(LIB_DIR)/*.so $(DEST_LIB_DIR)
+	install -m 755 $(BIN) $(DEST_BIN_DIR)
+	@ldconfig
 
 uninstall:
-	rm -f $(DEST_LIB)/libpower.so
-	rm -f $(DEST_LIB)/libresistance.so
-	rm -f $(DEST_LIB)/libcomponent.so
-	rm -f $(DEST_BIN)/$(BIN)
+	rm -f $(DEST_LIB_DIR)/libpower.so
+	rm -f $(DEST_LIB_DIR)/libresistance.so
+	rm -f $(DEST_LIB_DIR)/libcomponent.so
+	rm -f $(DEST_BIN_DIR)/$(BIN)
 
-lib: $(LIBS)
-	mkdir -p $(DIR)
-	mv *.so $(DIR)
+$(LIB_DIR): 
+	mkdir -p $(LIB_DIR)
 
-$(BIN): electrotest.o
-	$(CC) $(CFLAGS) -o $@ main/$@.c -L./$(DIR) $(LFLAGS)/$(DIR) -lm
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
-libpower.so: power.o
-	$(CC) $(CFLAGS) -shared -fPIC -o $@ power.o
+$(BIN): $(OBJ_DIR)/electrotest.o
+	$(CC) $(CFLAGS) -o $@ $^ -L$(LIB_DIR) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN/$(LIB_DIR)'
 
-libresistance.so: libresistance.o
-	$(CC) $(CFLAGS) -shared -fPIC -o $@ libresistance.o
+$(LIB_DIR)/libpower.so: ../libpower/power.c ../libpower/power.h | $(LIB_DIR)
+	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
-libcomponent.so: libcomponent.o
-	$(CC) $(CFLAGS) -shared -fPIC -o $@ libcomponent.o
+$(LIB_DIR)/libresistance.so: ../libresistance/src/libresistance.c ../libresistance/src/libresistance.h | $(LIB_DIR)
+	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
-electrotest.o: $(OBJS)
-	$(CC) $(CFLAGS) -c -fPIC main/$*.c
+$(LIB_DIR)/libcomponent.so: ../libcomponent/main/libcomponent.c ../libcomponent/main/libcomponent.h | $(LIB_DIR)
+	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^
 
-power.o: ../libpower/src/power.c ../libpower/src/power.h
-	$(CC) $(CFLAGS) -c -fPIC ../libpower/src/$*.c
-
-libresistance.o: ../libresistance/src/libresistance.c ../libresistance/src/libresistance.h
-	$(CC) $(CFLAGS) -c -fPIC ../libresistance/src/$*.c
-
-libcomponent.o: ../libcomponent/main/libcomponent.c ../libcomponent/main/libcomponent.h
-	$(CC) $(CFLAGS) -c -fPIC ../libcomponent/main/$*.c -lm
+$(OBJ_DIR)/electrotest.o: main/electrotest.c main/electrotest.h | $(OBJ_DIR)
+	$(CC) -I../libresistance/src -I../libcomponent/main -I../libpower $(CFLAGS) -c -o $@ $<

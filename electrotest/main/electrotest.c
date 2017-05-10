@@ -2,6 +2,9 @@
 #include <stdbool.h> // bool
 #include <ctype.h> // toupper
 
+const float minResistance = 0.01;
+const float maxResistance = 1000000;
+
 static bool is_P_or_S_ignoringCaseAndTerminatingCharacter(char *str) {
   int numberOfInitialCharacters_P_or_S = strspn(str, "SPsp");
   //printf("\n numberOfInitialCharacters_P_or_S : %d", numberOfInitialCharacters_P_or_S);
@@ -98,8 +101,11 @@ void get_comps(Electro *e) {
       fgets(str,MAXWORDS,stdin);
       float res;
       int numberOfSuccessfullyFilledVariables = sscanf(str, "%f", &res);
-      if(numberOfSuccessfullyFilledVariables != 1){
-        fprintf(stderr,"Input must be a value\n");
+      if (
+        numberOfSuccessfullyFilledVariables != 1
+        || res < minResistance || res > maxResistance
+      ) {
+        fprintf(stderr, "Input must be a value between %f and %f\n", minResistance, maxResistance);
       }else{
         e->comps[i] = res;
         break;

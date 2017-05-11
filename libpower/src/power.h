@@ -8,7 +8,7 @@
 
 #ifndef _POWER_
 #define _POWER_
-
+#include <math.h>
 /**
  * Funktionens syfte: Beräkna effekten enligt formeln P=U^2*R.
  * In: Spänningen samt resistansen som effekten ska beräknas utifrån.

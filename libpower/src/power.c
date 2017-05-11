@@ -10,7 +10,7 @@
 #include "power.h"
 
 /**
- * Funktionens syfte: Beräkna effekten enligt formeln P=U^2*R.
+ * Funktionens syfte: Beräkna effekten enligt formeln P=U^2/R.
  * In: Spänningen samt resistansen som effekten ska beräknas utifrån.
  * Ut: Effekten utifrån den angivna spänningen samt resistansen.
  */

@@ -12,6 +12,7 @@ Definieras odh dokumenteras i "libcomponent.c"
 extern const long double E12_BASE_VALUES[];
 
 /**
+
 Definieras odh dokumenteras i "libcomponent.c"
 */
 extern const long double DELTA_VALUE_FOR_EQUALITY;
@@ -81,6 +82,10 @@ void test_e_resistance_01398(void) {
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0018, res_array[1]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.00018, res_array[2]);
 }
+// Om man testar med ännu mindre värden t.ex. e_resistance(0.001398, res_array);
+// så verkar det bli fel ... men eftersom det här inte är en programmeringskurs
+// med fokus på att implementera algoritmer med hög precision borde det inte spela någon roll
+
 
 // Detta test lade jag till i samband att jag upptäckte att 4.7 inte fungerade
 // (när testerna i en loop kördes)

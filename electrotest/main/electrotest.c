@@ -23,12 +23,21 @@ int main(void) {
     get_conn(e);
     get_comps(e);
     printf("Ersättningsresistans:\n");
+
+    // Anrop av funktionen "calc_resistance" i biblioteket "libresistance.so":
     res = calc_resistance(e->count, e->conn, e->comps);
+
     printf("%.1f ohm\n", res);
     printf("Effekt:\n");
+
+    // Anrop av funktionen "calc_power_r" i biblioteket "libpower.so":
     printf("%.2f W\n", calc_power_r(e->volt, res));
+
     printf("Ersättningsresistanser i E12-serien kopplade i serie:\n");
+
+    // Anrop av funktionen "e_resistance" i biblioteket "libcomponent.so":
     int c = e_resistance(res, res_array);
+
     for (int i = 0; i < c; i++) {
       printf("%f\n", res_array[i]);
     }

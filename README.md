@@ -1,10 +1,55 @@
 # Lab6
 ## Studenter
 * Marcus Nordenberg (mano0333)
-* Thomas Johansson (tojo0084)
+* Tomas Johansson (tojo0084)
 * Ludvig Lundberg (lulu0011)
 
-## Gemensam Redovisning
+## Projektets kataloger och huvudprogrammets filer
+Root-katalogen innehåller följande fyra underkataloger, varav de tre första är biblioteken som ska redovisas individuellt:
+* libresistance (Bibliotek 1, Marcus)
+* libpower (Biliotek 2, Ludvig)
+* libcomponent (Bibliotek 3, Tomas)
+* electrotest (huvudprogram, gemensamt)
+
+Huvudprogrammet och biblioteken kompileras/länkas/installeras enligt regler i följande makefile:
+electrotest/Makefile
+Reglerna i den makefilen beskrivs i ett separat underavsnitt längre ner.
+
+Huvudprogrammets källkod finns i följande fil:
+electrotest/main/electrotest.c
+Det framgår av kommentarer i den filen var de tre funktionerna i de tre biblioteken används.
+Huvudprogrammets källkod kompileras/länkas inte till källkoden eller objektfilerna för de tre biblioteken.
+Det länkas istället till de shared libraries (.so-filerna) som skapas när makefilen exekveras.
+
+## Reglerna i huvudprogrammets makefile
+Nedan beskrivs resultatet av att exekvera de tre reglerna "lib", "all" och "install" (dvs de tre regler som skall redovisas).
+(detaljerna om växlarna som används i makefilen beskrivs längre ner i annat underavsnitt)
+
+"make lib"
+Kompilerar och länkar de tre biblioteken så att följande tre shared libraries skapas:
+* electrotest/lib/libresistance.so
+* electrotest/lib/libpower.so
+* electrotest/lib/libcomponent.so
+
+"make all"
+Skapar de tre biblioteken (på samma sätt som "make lib" ovan) i lib-katalogen och dessutom en objektfil "obj/electrotest.o" och ett huvudprogram "electrotest" i samma katalog som makefilen.
+Programmet som skapas kan exekveras från aktuella katalogen "electrotest" genom att skriva "./electrotest".
+Om man från den katalogen skriver "ldd ./electrotest" kan man konstatera att biblioteksfilerna som programmet försöker använda är de tre lokala biblioteken dvs .so-filerna som ligger i lokala katalogen "electrotest/lib".
+Om man raderar filerna i den lokala lib-katalogen och sedan skriver "ldd ./electrotest" kommer det istället framgå att programmet då försöker använda motsvarande filer i katalogen "/usr/local/lib/" om de existerar d.v.s. om "make install" (se nedan) har exekverats.
+
+"make install"
+När detta kommando exekveras blir resultatet att följande fyra filer skapas:
+* /usr/local/lib/libresistance.so
+* /usr/local/lib/libpower.so
+* /usr/local/lib/libcomponent.so
+* /usr/local/bin/electrotest
+Electrotest-programmet i katalogen "/usr/local/bin" kan exekveras genom att skriva "electrotest" (d.v.s. utan prefixet "./" och oavsett aktuell katalog).
+Om man skriver "ldd /usr/local/bin/electrotest") kan man konstatera att biblioteksfilerna som används är de tre publika biblioteken dvs .so-filerna som ligger i katalogen "/usr/local/lib"
+
+När man exekverar kommandot "make install" måste man ha behörighet att skapa filer under katalogen "/usr/local".
+Om man t.ex. använder Ubuntu kan man lösa det genom att använda kommandot "sudo make install".
+
+## Gemensam redovisning av växlarna som används i huvudprogrammets makefile
 Den gemensamma delen för att bygga electrotest använde följande Makefile.
 
 ```make
@@ -70,6 +115,8 @@ CFLAGS anger våra kompileringsflaggor.
    Anger att vi vill vara "conformant" mot c11-standarden.
 * `-Wall`
    Anger att vi vill ha varningar för alla kända vanliga missar ur programmeringsteknisk synpunkt.
+   * `-Wextra`
+   Anger att vi vill ha ytterligare varningar utöver de som ingår i flaggan -Wall
 * `-Werror`
    Anger att vi vill att varningar skall behandlas som fel. Livet är hårt.
 * `-pedantic`
@@ -123,7 +170,7 @@ Target för att länka vår binärfil.
 * `$^`
   Specar alla prereqs utom order-only, i detta fall bara vår electrotest.o.
 * `-L$(LIB_DIR)`
-  Talar om att vi vill att ld ska leta i LIB_DIR efter våra dynamiska bibliotek. 
+  Talar om att vi vill att ld ska leta i LIB_DIR efter våra dynamiska bibliotek.
 * `-rpath`
   Här anger vi argument till ld. Närmare bestämt att ld ska sätta rpath till $ORIGIN/lib för att först leta lokalt efter de dynamiska biblioteken för att sedan falla tillbaka på ld.so. $ORIGIN här gör att vi alltid utgår från där binären ligger. Vi kan alltså t.ex. köra den från en godtycklig plats i systemet. Anledningen till att dubbla $$ används är för att make annars vill tolka det som en variabel. Det är ett sätt att "escapa" $.
 

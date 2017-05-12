@@ -24,9 +24,9 @@ int main(void) {
     get_comps(e);
     printf("Ersättningsresistans:\n");
     res = calc_resistance(e->count, e->conn, e->comps);
-    printf("%f ohm\n", res);
+    printf("%.1f ohm\n", res);
     printf("Effekt:\n");
-    printf("%f \n", calc_power_r(e->volt, res));
+    printf("%.2f W\n", calc_power_r(e->volt, res));
     printf("Ersättningsresistanser i E12-serien kopplade i serie:\n");
     int c = e_resistance(res, res_array);
     for (int i = 0; i < c; i++) {

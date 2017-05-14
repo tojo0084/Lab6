@@ -23,11 +23,11 @@ const int maxMinusPower = 4; // 1^-4 dvs ett upphöjt till -4
 const int maxPlusPower = 7;  // 1^7 dvs ett upphöjt till +7
 
 /**
-Array-storleken 500 nedan skulle räcka till för en array med E12-värden 
+Array-storleken 500 nedan skulle räcka till för en array med E12-värden
 mellan 10^-20 och 10^20.
-Den hårdkodas här till en större siffra än vad som behövs för att slippa ändra på flera 
-ställen om man vill justera intervallet, eftersom det INTE fungerar att här allokera med 
-konstanter på följande sätt: 
+Den hårdkodas här till en större siffra än vad som behövs för att slippa ändra på flera
+ställen om man vill justera intervallet, eftersom det INTE fungerar att här allokera med
+konstanter på följande sätt:
 static long double values[maxMinusPower+maxPlusPower+1]
 */
 static long double E12_values[500];
@@ -51,7 +51,7 @@ Hjälpfunktion som används som parameter (funktionspekare) till qsort för att 
 För att arrayen ska bli sorterad i sjunkande ordning ska funktionen returnera ett posiitivt tal om a är större än b.
 Ett negativt tal ska returneras om b är större än a, och noll ska returneras om talen ska betraktas som lika.
 */
-int sortingDescending(const void *a, const void *b) {
+static int sortingDescending(const void *a, const void *b) {
   float val1 = *(float *)a;
   float val2 = *(float *)b;
   float diff = val1 - val2;
@@ -63,19 +63,19 @@ int sortingDescending(const void *a, const void *b) {
 }
 
 /**
-Initierar en stor array med alla tänkbara E12-värden med hjälp av en mindre array 
+Initierar en stor array med alla tänkbara E12-värden med hjälp av en mindre array
 med 12 st grundvärden mellan 1 och 10.
 Övriga E12-värden erhålles genom att multiplicera grundvärdena med tiopotenser.
 Initierings-funktionen behöver bara anropas en gång, och då sätter den
-numberOfArrayItems till en siffra större än 0, vilket därför kan utnyttjas för 
+numberOfArrayItems till en siffra större än 0, vilket därför kan utnyttjas för
 att innan anrop kontrollera om ett anrop behövs.
-Funktionen kommer alltså att populera en stor array med E12-värden tillhörande 
+Funktionen kommer alltså att populera en stor array med E12-värden tillhörande
 olika tiopotenser.
 Exempel på E12-grundvärden: 1.00,  1.20,  1.50 ...
 Exempel på fler värden men från en annan tiopotens: 1000000, 1200000 1500000 ...
 Fler exempel från en annan tiopotens: 0.00001,  0.000012,  0.000015
 */
-void initializeArrayWithE12valuesOfDifferentPowers() {
+static void initializeArrayWithE12valuesOfDifferentPowers() {
   int numberOfValuesPerE12sequence =
       sizeof(E12_BASE_VALUES) / sizeof(long double); // istället för att hårdkdoda 12
 
@@ -95,7 +95,7 @@ void initializeArrayWithE12valuesOfDifferentPowers() {
 
 
 /**
-Loopar igenom kombinationer av E12-värden för att testa om en summering av 1-3 sådana 
+Loopar igenom kombinationer av E12-värden för att testa om en summering av 1-3 sådana
 termer resulterar i en summa lika med inparametern orig_resistance.
 Om termer hittas fylls de i parameter-arrayen som således fungerar som en output-parameter.
 
@@ -104,7 +104,7 @@ Om termer hittas fylls de i parameter-arrayen som således fungerar som en outpu
 @param potentialTermsForSumming  array med alla de termer som kan kombineras för att försöka summera till önskvärda summan.
 @return antalet termer (1-3) eller 0 om inga kombinationer av termer resulterade i önskvärd summa.
 */
-int
+static int
 iterateArrayAndTryToSumCombinationOfValues(float desiredSum, float* resultTerms, long double * potentialTermsForSumming) {
   // Det finns naturligtvis ENORM potential att skriva om den här funktktionen på
   // ett bättre sätt..

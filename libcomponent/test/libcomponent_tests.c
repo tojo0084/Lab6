@@ -17,23 +17,23 @@ Definieras odh dokumenteras i "libcomponent.c"
 */
 extern const long double DELTA_VALUE_FOR_EQUALITY;
 
-float res_array[3];
-int count;
+static float res_array[3];
+static int count;
 
-void test_e_resistance_1200(void) {
+static void test_e_resistance_1200(void) {
   count = e_resistance(1200, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200, res_array[0]);
 }
 
-void test_e_resistance_1380(void) {
+static void test_e_resistance_1380(void) {
   count = e_resistance(1380, res_array);
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 180, res_array[1]);
 }
 
-void test_e_resistance_1398(void) {
+static void test_e_resistance_1398(void) {
   count = e_resistance(1398, res_array);
   TEST_ASSERT_EQUAL_INT(3, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200, res_array[0]);
@@ -41,20 +41,20 @@ void test_e_resistance_1398(void) {
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 18, res_array[2]);
 }
 
-void test_e_resistance_1200000(void) {
+static void test_e_resistance_1200000(void) {
   count = e_resistance(1200000, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200000, res_array[0]);
 }
 
-void test_e_resistance_1380000(void) {
+static void test_e_resistance_1380000(void) {
   count = e_resistance(1380000, res_array);
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200000, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 180000, res_array[1]);
 }
 
-void test_e_resistance_1398000(void) {
+static void test_e_resistance_1398000(void) {
   count = e_resistance(1398000, res_array);
   TEST_ASSERT_EQUAL_INT(3, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200000, res_array[0]);
@@ -62,20 +62,20 @@ void test_e_resistance_1398000(void) {
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 18000, res_array[2]);
 }
 
-void test_e_resistance_01200(void) {
+static void test_e_resistance_01200(void) {
   count = e_resistance(0.012, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
 }
 
-void test_e_resistance_01380(void) {
+static void test_e_resistance_01380(void) {
   count = e_resistance(0.0138, res_array);
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0018, res_array[1]);
 }
 
-void test_e_resistance_01398(void) {
+static void test_e_resistance_01398(void) {
   count = e_resistance(0.01398, res_array);
   TEST_ASSERT_EQUAL_INT(3, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
@@ -96,13 +96,13 @@ void test_e_resistance_01398(void) {
 // (men t.ex. jämföresle med 3.9 funkade även med den senare)
 // 0.000001
 // 0.0000001
-void test_e_resistance_4_7(void) {
+static void test_e_resistance_4_7(void) {
   count = e_resistance(4.7, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 4.7, res_array[0]);
 }
 
-void test_e_resistance_61(void) {
+static void test_e_resistance_61(void) {
   // Det här testet som använder parametern 6.1 illustrerar ganska bra att
   // algoritmen inte kan implementeras så enkelt som man skulle kunna hoppas.
   // Den motvisar nämligen vad jag först tänkte mig, nämligen att man skulle
@@ -132,7 +132,7 @@ void test_e_resistance_61(void) {
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 2.2, res_array[1]);
 }
 
-void test_e_resistance_E12_values_matchingWithoutSumming(void) {
+static void test_e_resistance_E12_values_matchingWithoutSumming(void) {
   // E12_BASE_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 ,
   // 4.70, 5.60, 6.80, 8.20  };
 

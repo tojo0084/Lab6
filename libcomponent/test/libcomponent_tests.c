@@ -1,18 +1,25 @@
-// Tomas Johansson, Bibliotek 3, libcomponent.so
-
-// gcc libcomponent_tests.c unity/unity.c ../main/libcomponent.c -lm -o libcomponent_tests
-// -lm är för att kompilera math.h (math library is named libm.so)
-
+/**
+* Tomas Johansson
+* tojo0084@gapps.umu.se
+* 2017-05-15
+* Bibliotek 3, libcomponent.so
+*/
+// gcc -std=c99 libcomponent_tests.c unity/unity.c ../main/libcomponent.c -lm -o
+// libcomponent_tests
+// Syftet med -lm är att funktion från math.h används (och math library heter
+// libm.so , och eftersom man inte ska ange "ib" eller fil-suffixet återstår
+// "lm")
+// Syftet med c99 är att koden bl.a. använder initiering av variabler i
+// for-loopar och att kommentarer av typen // ska kunna användas
 #include "unity/unity.h"
 #include "../main/libcomponent.h"
 
 /**
-Definieras odh dokumenteras i "libcomponent.c"
+Definieras och dokumenteras i "libcomponent.c"
 */
 extern const long double E12_BASE_VALUES[];
 
 /**
-
 Definieras odh dokumenteras i "libcomponent.c"
 */
 extern const long double DELTA_VALUE_FOR_EQUALITY;
@@ -20,11 +27,12 @@ extern const long double DELTA_VALUE_FOR_EQUALITY;
 static float res_array[3];
 static int count;
 
-static verifyZeroForTheLastNonUsedArrayPositions(int numberOfPositionsWhichShouldBeZero) {
-  if(numberOfPositionsWhichShouldBeZero >= 1) {
+static void verifyZeroForTheLastNonUsedArrayPositions(
+    int numberOfPositionsWhichShouldBeZero) {
+  if (numberOfPositionsWhichShouldBeZero >= 1) {
     TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0, res_array[2]);
   }
-  if(numberOfPositionsWhichShouldBeZero == 2) {
+  if (numberOfPositionsWhichShouldBeZero == 2) {
     TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0, res_array[1]);
   }
 }
@@ -99,18 +107,20 @@ static void test_e_resistance_01398(void) {
 }
 // Om man testar med ännu mindre värden t.ex. e_resistance(0.001398, res_array);
 // så verkar det bli fel ... men eftersom det här inte är en programmeringskurs
-// med fokus på att implementera algoritmer med hög precision borde det inte spela någon roll
+// med fokus på att implementera algoritmer med hög precision borde det inte
+// spela någon roll
 
-
-// Detta test lade jag till i samband att jag upptäckte att 4.7 inte fungerade
-// (när testerna i en loop kördes)
-// och det löste jag genom att justera värdet på DELTA_VALUE_FOR_EQUALITY med
-// mindre precision.
-// Dessa två värden nedan medförde t.ex. skillnaden för att kolla om 4.7 är lika
-// med 4.7 ...
-// (men t.ex. jämföresle med 3.9 funkade även med den senare)
-// 0.000001
-// 0.0000001
+/**
+Detta test lade jag till i samband att jag upptäckte att 4.7 inte fungerade
+(när testerna i en loop kördes)
+och det löste jag genom att justera värdet på DELTA_VALUE_FOR_EQUALITY med
+mindre precision.
+Dessa två värden nedan medförde t.ex. skillnaden för att kolla om 4.7 är lika
+med 4.7 ...
+(men t.ex. jämföresle med 3.9 funkade även med den senare)
+0.000001
+0.0000001
+*/
 static void test_e_resistance_4_7(void) {
   count = e_resistance(4.7, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
@@ -118,10 +128,10 @@ static void test_e_resistance_4_7(void) {
   verifyZeroForTheLastNonUsedArrayPositions(2);
 }
 
-static void test_e_resistance_61(void) {
+static void test_e_resistance_6_1(void) {
   // Det här testet som använder parametern 6.1 illustrerar ganska bra att
   // algoritmen inte kan implementeras så enkelt som man skulle kunna hoppas.
-  // Den motvisar nämligen vad jag först tänkte mig, nämligen att man skulle
+  // Den motbevisar nämligen vad jag först tänkte mig, nämligen att man skulle
   // kunna först välja det högsta värdet som samtidigt
   // inte är för stort, och sedan fyllar man på i eventudell diff med nästa
   // värde, och samma princip för det ev tredje sista värdet.
@@ -150,9 +160,9 @@ static void test_e_resistance_61(void) {
 }
 
 static void test_e_resistance_E12_values_matchingWithoutSumming(void) {
-  // E12_BASE_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90 ,
+  // E12_BASE_VALUES[] = { 1.00,  1.20,  1.50,  1.80 , 2.20,  2.70,  3.30 , 3.90
+  // ,
   // 4.70, 5.60, 6.80, 8.20  };
-
   double multipliers[] = {0.001, 1, 1000};
   for (int j = 0; j < 3; j++) {
     for (int i = 0; i < 12; i++) {
@@ -184,7 +194,7 @@ int main(void) {
   RUN_TEST(test_e_resistance_01380);
   RUN_TEST(test_e_resistance_01398);
 
-  RUN_TEST(test_e_resistance_61);
+  RUN_TEST(test_e_resistance_6_1);
 
   RUN_TEST(test_e_resistance_E12_values_matchingWithoutSumming);
   // testet nedan lade jag till när jag upptäckte ett fel i testet ovan

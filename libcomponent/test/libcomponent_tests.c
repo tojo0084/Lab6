@@ -20,10 +20,20 @@ extern const long double DELTA_VALUE_FOR_EQUALITY;
 static float res_array[3];
 static int count;
 
+static verifyZeroForTheLastNonUsedArrayPositions(int numberOfPositionsWhichShouldBeZero) {
+  if(numberOfPositionsWhichShouldBeZero >= 1) {
+    TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0, res_array[2]);
+  }
+  if(numberOfPositionsWhichShouldBeZero == 2) {
+    TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0, res_array[1]);
+  }
+}
+
 static void test_e_resistance_1200(void) {
   count = e_resistance(1200, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200, res_array[0]);
+  verifyZeroForTheLastNonUsedArrayPositions(2);
 }
 
 static void test_e_resistance_1380(void) {
@@ -31,6 +41,7 @@ static void test_e_resistance_1380(void) {
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 180, res_array[1]);
+  verifyZeroForTheLastNonUsedArrayPositions(1);
 }
 
 static void test_e_resistance_1398(void) {
@@ -45,6 +56,7 @@ static void test_e_resistance_1200000(void) {
   count = e_resistance(1200000, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200000, res_array[0]);
+  verifyZeroForTheLastNonUsedArrayPositions(2);
 }
 
 static void test_e_resistance_1380000(void) {
@@ -52,6 +64,7 @@ static void test_e_resistance_1380000(void) {
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 1200000, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 180000, res_array[1]);
+  verifyZeroForTheLastNonUsedArrayPositions(1);
 }
 
 static void test_e_resistance_1398000(void) {
@@ -66,6 +79,7 @@ static void test_e_resistance_01200(void) {
   count = e_resistance(0.012, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
+  verifyZeroForTheLastNonUsedArrayPositions(2);
 }
 
 static void test_e_resistance_01380(void) {
@@ -73,6 +87,7 @@ static void test_e_resistance_01380(void) {
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.012, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 0.0018, res_array[1]);
+  verifyZeroForTheLastNonUsedArrayPositions(1);
 }
 
 static void test_e_resistance_01398(void) {
@@ -100,6 +115,7 @@ static void test_e_resistance_4_7(void) {
   count = e_resistance(4.7, res_array);
   TEST_ASSERT_EQUAL_INT(1, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 4.7, res_array[0]);
+  verifyZeroForTheLastNonUsedArrayPositions(2);
 }
 
 static void test_e_resistance_61(void) {
@@ -130,6 +146,7 @@ static void test_e_resistance_61(void) {
   TEST_ASSERT_EQUAL_INT(2, count);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 3.9, res_array[0]);
   TEST_ASSERT_FLOAT_WITHIN(DELTA_VALUE_FOR_EQUALITY, 2.2, res_array[1]);
+  verifyZeroForTheLastNonUsedArrayPositions(1);
 }
 
 static void test_e_resistance_E12_values_matchingWithoutSumming(void) {
@@ -147,6 +164,7 @@ static void test_e_resistance_E12_values_matchingWithoutSumming(void) {
       TEST_ASSERT_EQUAL_INT_MESSAGE(1, count, testFailureMessage);
       TEST_ASSERT_FLOAT_WITHIN_MESSAGE(DELTA_VALUE_FOR_EQUALITY, e12value,
                                        res_array[0], testFailureMessage);
+      verifyZeroForTheLastNonUsedArrayPositions(2);
     }
   }
 }

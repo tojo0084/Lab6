@@ -1,4 +1,10 @@
-// Tomas Johansson, Bibliotek 3, libcomponent.so
+/**
+* Tomas Johansson
+* tojo0084@gapps.umu.se
+* 2017-05-14
+* Bibliotek 3, libcomponent.so
+*/
+
 #include <stdio.h>
 #include <stdlib.h>  // qsort
 #include <math.h>    // fabs , pow . Observera vid kompilering av math.h: använd -lm (math library heter libm.so)
@@ -136,6 +142,9 @@ iterateArrayAndTryToSumCombinationOfValues(float desiredSum, float* resultTerms,
     for (int i = 0; i < numberOfArrayItems - 2; i++) {
       if (fabs(desiredSum - potentialTermsForSumming[i]) < DELTA_VALUE_FOR_EQUALITY) {
         resultTerms[0] = potentialTermsForSumming[i];
+        // Om inte alla 3 komponenterna behövs ska de som inte används fyllas med värdet 0.
+        resultTerms[1] = 0;
+        resultTerms[2] = 0;
         return 1;
       }
       if (loopCounter == 1)
@@ -148,6 +157,8 @@ iterateArrayAndTryToSumCombinationOfValues(float desiredSum, float* resultTerms,
           resultTerms[0] = potentialTermsForSumming[i];
           resultTerms[1] = potentialTermsForSumming[j];
           qsort(resultTerms, 2, sizeof(float), sortingDescending);
+          // Om inte alla 3 komponenterna behövs ska de som inte används fyllas med värdet 0.
+          resultTerms[2] = 0;
           return 2;
         }
         if (loopCounter == 2)
